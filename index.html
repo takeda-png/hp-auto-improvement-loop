@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HP自動改善ループ</title>
+<meta name="description" content="アクセス解析×SFA×Clarityを毎月つなぎ、3か月ごとにHPを直す仕組みと、自社サイトで回した2026年10月の結果。">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.5.1/github-markdown-light.css">
+<style>
+  :root { color-scheme: light; }
+  html, body { background: #ffffff; margin: 0; }
+  .markdown-body { box-sizing: border-box; max-width: 980px; margin: 0 auto; padding: 40px 16px 64px; }
+  .markdown-body table { display: block; overflow-x: auto; }
+  .markdown-body img { background: #fff; }
+  pre.mermaid { background: #ffffff; border: 1px solid #e5e7eb; text-align: center; overflow-x: auto; }
+</style>
+</head>
+<body>
+<article class="markdown-body">
+<h1>HP自動改善ループ</h1>
+<p><strong>作って終わりにしない。毎月の数字で見て、3か月ごとにHPを直す — を仕組みで回す。</strong></p>
+<p>アクセス解析（誰が・何で問い合わせたか）× SFA（契約になったか）× Clarity（どこで離れたか）を毎月つなぎ、Claudeがレポートを下書きし、人が確かめ、3か月ごとに「HPの直す場所」を実際の画面に赤枠で出す。<br>
+実例として、B2Bコンサルティング会社（当社）の自社サイトで回した2026年10月の結果を載せています。固有名詞・社名・個人名は伏せています。</p>
+<hr>
+<h2>1. ループの全体像</h2>
+<pre class="mermaid">%%{init: {&quot;theme&quot;:&quot;base&quot;,&quot;themeVariables&quot;:{&quot;background&quot;:&quot;#ffffff&quot;,&quot;primaryColor&quot;:&quot;#ffffff&quot;,&quot;primaryTextColor&quot;:&quot;#1f2937&quot;,&quot;primaryBorderColor&quot;:&quot;#1B4F9C&quot;,&quot;lineColor&quot;:&quot;#1B4F9C&quot;,&quot;fontFamily&quot;:&quot;sans-serif&quot;}}}%%
+flowchart LR
+    A[&quot;① 集める&lt;br/&gt;&lt;b&gt;毎月・自動&lt;/b&gt;&lt;br/&gt;アクセス解析：誰が・何で問い合わせたか&lt;br/&gt;SFA：契約になったか&lt;br/&gt;Clarity：どこで離れたか&quot;]
+    B[&quot;② 読む&lt;br/&gt;&lt;b&gt;毎月・自動&lt;/b&gt;&lt;br/&gt;入口ごとに 反響→契約 を集計&lt;br/&gt;Claudeがコメントを下書き&lt;br/&gt;第1営業日の朝にPDFで届く&quot;]
+    C[&quot;③ 確かめる&lt;br/&gt;&lt;b&gt;人&lt;/b&gt;&lt;br/&gt;営業記録の更新候補を承認&lt;br/&gt;数字の違和感をチェック&lt;br/&gt;（勝手に書き換えない）&quot;]
+    D[&quot;④ 直す&lt;br/&gt;&lt;b&gt;3か月ごと&lt;/b&gt;&lt;br/&gt;実際の画面に赤枠で&lt;br/&gt;「HPの直す場所」を出す&lt;br/&gt;直したら次の3か月で効果を見る&quot;]
+    A --&gt; B --&gt; C --&gt; D --&gt; A
+    classDef step fill:#ffffff,stroke:#1B4F9C,stroke-width:2px,color:#1f2937
+    class A,B,C,D step
+</pre>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>ステップ</th>
+<th>誰が</th>
+<th>頻度</th>
+<th>入力</th>
+<th>出力</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>① 集める</td>
+<td>自動</td>
+<td>毎月</td>
+<td>アクセス解析 / SFA / Clarity</td>
+<td>反響台帳（CV・経路・契約ステータス）</td>
+</tr>
+<tr>
+<td>② 読む</td>
+<td>自動（Claude）</td>
+<td>毎月</td>
+<td>反響台帳</td>
+<td>入口別の 反響→アポ→商談→契約 集計＋コメント下書き（PDF）</td>
+</tr>
+<tr>
+<td>③ 確かめる</td>
+<td>人</td>
+<td>毎月</td>
+<td>PDF＋SFA更新候補</td>
+<td>承認済みの数字（解析ツールへ反映）</td>
+</tr>
+<tr>
+<td>④ 直す</td>
+<td>人＋Claude</td>
+<td>3か月</td>
+<td>承認済みの数字＋ヒートマップ</td>
+<td>「直す場所」赤枠つき改善案 → 実装 → 次の3か月で検証</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p><strong>原則</strong></p>
+<ul>
+<li>数字の正は「契約まで追った結果」。CV件数・CV単価だけで判断しない</li>
+<li>自動で書き換えるのは下書きまで。SFA・解析ツールの更新は人が承認してから</li>
+<li>直した箇所は、次の3か月の同じ指標で効果を見る</li>
+</ul>
+<hr>
+<h2>2. 結果 — 自社サイトの伸び（前年同期比）</h2>
+<p>2026年1〜9月 vs 2025年1〜9月（GA4・自社サイト）</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>指標</th>
+<th align="right">2025年</th>
+<th align="right">2026年</th>
+<th align="right">伸び</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>サイトの訪問者（人数）</td>
+<td align="right">32,262</td>
+<td align="right">86,702</td>
+<td align="right"><strong>2.69倍</strong></td>
+</tr>
+<tr>
+<td>自然検索からの訪問（回数）</td>
+<td align="right">26,092</td>
+<td align="right">54,482</td>
+<td align="right"><strong>2.09倍</strong></td>
+</tr>
+<tr>
+<td>フォームの送信</td>
+<td align="right">2,503</td>
+<td align="right">4,664</td>
+<td align="right"><strong>1.86倍</strong></td>
+</tr>
+<tr>
+<td>AI検索からの訪問（回数）</td>
+<td align="right">301</td>
+<td align="right">445</td>
+<td align="right"><strong>1.48倍</strong></td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>月ごとの訪問者数（GA4）</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th></th>
+<th align="right">1月</th>
+<th align="right">2月</th>
+<th align="right">3月</th>
+<th align="right">4月</th>
+<th align="right">5月</th>
+<th align="right">6月</th>
+<th align="right">7月</th>
+<th align="right">8月</th>
+<th align="right">9月</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2025年</td>
+<td align="right">3,112</td>
+<td align="right">3,955</td>
+<td align="right">4,649</td>
+<td align="right">3,645</td>
+<td align="right">2,962</td>
+<td align="right">3,033</td>
+<td align="right">4,247</td>
+<td align="right">4,016</td>
+<td align="right">4,101</td>
+</tr>
+<tr>
+<td>2026年</td>
+<td align="right">7,551</td>
+<td align="right">6,685</td>
+<td align="right">7,645</td>
+<td align="right">6,987</td>
+<td align="right">13,097</td>
+<td align="right">9,006</td>
+<td align="right">11,847</td>
+<td align="right">14,588</td>
+<td align="right">12,684</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>訪問だけでなく「どこから来た人が契約したか」まで追っています（<strong>Web問い合わせからの新規契約 8件・約939万円</strong>）。</p>
+<blockquote>
+<p>伸びには広告出稿（イベント集客を含む）や季節要因も含みます。フォームの送信は問い合わせ・セミナー・イベントの申込みの合計で、契約数ではありません。AI検索は ChatGPT・Gemini・Perplexity・Copilot・Claude からの訪問です。</p>
+</blockquote>
+<hr>
+<h2>3. 「読む」の実例 — 反響から契約まで（2025.09〜2026.10）</h2>
+<p>解析ツールの営業ステータスは9割が空欄だったため、SFAの案件約1万件と照合して23件を更新。そのうえで法人の反響352件を集計。</p>
+<pre class="notranslate"><code class="notranslate">反響 352 ──10.8%──▶ アポ 38 ──71.1%──▶ 商談 27 ──66.7%──▶ 契約 18（うち新規 8）
+</code></pre>
+<p>落ちているのは「反響→アポ」の1か所だけ。ただし反響の58%はセミナー申込で、もともとアポを取る対象ではない。<strong>お問い合わせに限るとアポ率30.7%</strong>。</p>
+<p><strong>どこから来た反響が契約になっているか（上位）</strong></p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>流入経路</th>
+<th align="right">反響</th>
+<th align="right">契約</th>
+<th align="right">契約率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Google広告</td>
+<td align="right">6</td>
+<td align="right">5</td>
+<td align="right"><strong>83.3%</strong></td>
+</tr>
+<tr>
+<td>ダイレクト</td>
+<td align="right">171</td>
+<td align="right">4</td>
+<td align="right">2.3%</td>
+</tr>
+<tr>
+<td>自然検索（Google）</td>
+<td align="right">45</td>
+<td align="right">2</td>
+<td align="right">4.4%</td>
+</tr>
+<tr>
+<td>Meta広告</td>
+<td align="right">46</td>
+<td align="right">1</td>
+<td align="right">2.2%</td>
+</tr>
+<tr>
+<td>合計（全経路）</td>
+<td align="right">352</td>
+<td align="right">18</td>
+<td align="right">5.1%</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p><strong>どの申込みが契約になっているか</strong></p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>申込みの種類</th>
+<th align="right">反響</th>
+<th align="right">契約</th>
+<th align="right">契約率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>お問い合わせ</td>
+<td align="right">75</td>
+<td align="right">11</td>
+<td align="right"><strong>14.7%</strong></td>
+</tr>
+<tr>
+<td>資料ダウンロード</td>
+<td align="right">72</td>
+<td align="right">2</td>
+<td align="right">2.8%</td>
+</tr>
+<tr>
+<td>セミナー申込</td>
+<td align="right">205</td>
+<td align="right">5</td>
+<td align="right">2.4%</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p><strong>CV単価だけで見ると結論が逆になる</strong></p>
+<ul>
+<li>解析ツールのAIアドバイスは「CV単価10万円は非効率なのでGoogle広告を即時停止」。契約まで追うと Google広告は反響6件で契約5件・新規4件で約674万円 — <strong>最も契約に近い入口が止まっていた</strong></li>
+<li>「Meta広告の再開」はCV単価約2万円が理由。だが反響46件から生まれた契約は1件</li>
+<li>契約18件のうちWeb経由の新規は8件。残りは既存顧客の追加受注6・無料契約3・SFA該当なし1。「契約18」をそのまま読むと実力を倍近く見積もる</li>
+</ul>
+<p><strong>閲覧の違い（個別診断レポート336件の中央値）</strong></p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>到達段階</th>
+<th align="right">閲覧ページ数</th>
+<th align="right">滞在時間</th>
+<th align="right">訪問回数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>新規契約</td>
+<td align="right">13</td>
+<td align="right">10分56秒</td>
+<td align="right">3回</td>
+</tr>
+<tr>
+<td>アポ未達</td>
+<td align="right">5</td>
+<td align="right">2分44秒</td>
+<td align="right">3回</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>新規契約した会社はアポ未達の約2.6倍のページを約4倍の時間見ている。閲覧は平日9〜17時が77%、パソコンが71%。</p>
+<hr>
+<h2>4. 「直す」の実例 — HPの直す場所（Clarity・パソコン表示）</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>#</th>
+<th>ページ</th>
+<th>優先度</th>
+<th>見えたこと</th>
+<th>直し方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FIX 01</td>
+<td>トップ</td>
+<td>高</td>
+<td>最初の画面で<strong>46%が離脱</strong>。無料相談ボタン約10回に対し「No.1の調査概要」が32回（約3倍）</td>
+<td>相談ボタンの下に「サービスA」「サービスB」「業種別」の3入口。文言は「30分のオンライン相談を予約する」など、押すと何が起きるか分かる言葉に</td>
+</tr>
+<tr>
+<td>FIX 02</td>
+<td>お問い合わせ</td>
+<td>高</td>
+<td>フォームは約1,300px下から始まり到達58%、<strong>送信ボタンまで42%</strong>。選択肢16個で最多は「その他」。必須7項目</td>
+<td>フォームを電話番号の横（上部）へ。選択肢を5つ・必須を4項目に。横に日程予約</td>
+</tr>
+<tr>
+<td>FIX 03</td>
+<td>支援実績</td>
+<td>中</td>
+<td>申込み前に最も長く読まれる（254回・2分48秒）が相談ボタンは1か所。4件目あたりで半数が離脱</td>
+<td>各事例の最後に「同じ課題で相談する」。一覧4件目の後に相談の帯。業種での絞り込み</td>
+</tr>
+<tr>
+<td>FIX 04</td>
+<td>お役立ち資料</td>
+<td>中</td>
+<td>申込み欄がページの70%地点、到達は半数。メニューなし。資料DLが8月以降0件</td>
+<td>「ダウンロード」を押したらその場で入力欄（3項目）。メニューを揃える。計測の確認</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<markdown-accessiblity-table><table role="table">
+<tbody><tr>
+<td><a target="_blank" rel="noopener noreferrer" href="assets/fix01_top.jpg"><img src="assets/fix01_top.jpg" alt="FIX 01 トップ" width="100%" style="max-width: 100%;"></a></td>
+<td><a target="_blank" rel="noopener noreferrer" href="assets/fix03_works.jpg"><img src="assets/fix03_works.jpg" alt="FIX 03 支援実績" width="100%" style="max-width: 100%;"></a></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener noreferrer" href="assets/fix02_contact.jpg"><img src="assets/fix02_contact.jpg" alt="FIX 02 お問い合わせ" width="100%" style="max-width: 100%;"></a></td>
+<td><a target="_blank" rel="noopener noreferrer" href="assets/fix04_document.jpg"><img src="assets/fix04_document.jpg" alt="FIX 04 お役立ち資料" width="100%" style="max-width: 100%;"></a></td>
+</tr>
+</tbody></table></markdown-accessiblity-table>
+<hr>
+<h2>5. データの穴と直し方（次回から照合なしで回すために）</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>穴</th>
+<th>直し方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>アポ以降の記録がSFAにしかない（照合前は契約6件のみ）</td>
+<td>月1回のSFA照合を自動化、または商談担当が解析ツールのチェックも付ける</td>
+</tr>
+<tr>
+<td>社内IPからの代理登録が16件（うちセミナー14件）→ 閲覧履歴・スコアが社員のものになる</td>
+<td>代理登録はフォームを使わずSFAへ直接。または氏名欄に印</td>
+</tr>
+<tr>
+<td>資料ダウンロードの反響が7月を最後に0件</td>
+<td>完了ページの計測が外れていないか確認</td>
+</tr>
+<tr>
+<td>求職者・広告費・目標・検索キーワードが未入力</td>
+<td>求職者はCV種別から分離。広告費・目標・Search Console連携を入れる → AIアドバイスの前提が正しくなる</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<hr>
+<h2>6. 次にやること（2026年10月時点）</h2>
+<ol>
+<li><strong>Google広告を、お問い合わせへの検索広告として再開</strong>（月20万円程度・主力サービスの検索語に絞る）</li>
+<li><strong>お問い合わせフォームを上へ、項目を減らす</strong>（契約率14.7%の入口。月2〜3件増えるだけで効く）</li>
+<li><strong>セミナー申込のうち「新しい会社」だけを営業に回す</strong>（照合の仕組みをそのまま使う）</li>
+<li><strong>支援実績 → お問い合わせの導線を太くする</strong></li>
+<li><strong>トップの最初の画面に相談の入口を3つ置く</strong></li>
+</ol>
+<hr>
+<h2>構成</h2>
+<pre class="notranslate"><code class="notranslate">hp-auto-improvement-loop/
+├── README.md          # この1枚
+└── assets/            # 「直す場所」赤枠つき画面（Clarity・パソコン幅1280px・モザイク処理済み）
+    ├── fix01_top.jpg
+    ├── fix02_contact.jpg
+    ├── fix03_works.jpg
+    └── fix04_document.jpg
+</code></pre>
+<p><strong>データ</strong>：アクセス解析ツール 2026年10月17日取得／SFA 案件約1万件（同日）／Clarity 2026年9月19日〜10月18日（パソコン・ボット除外）／GA4 2025年1月〜2026年9月<br>
+<strong>注記</strong>：画面は社名・ロゴ・本文が読めないようモザイク処理しています（赤枠と注記の文字は残しています）。</p>
+</article>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({ startOnLoad: true });
+</script>
+</body>
+</html>
